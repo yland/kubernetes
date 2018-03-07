@@ -9,6 +9,7 @@ go_library(
     srcs = [
         "helper.go",
         "set.go",
+        "set_data.go",
         "set_env.go",
         "set_image.go",
         "set_resources.go",

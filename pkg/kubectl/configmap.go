@@ -133,17 +133,17 @@ func (s ConfigMapGeneratorV1) StructuredGenerate() (runtime.Object, error) {
 	configMap.Data = map[string]string{}
 	configMap.BinaryData = map[string][]byte{}
 	if len(s.FileSources) > 0 {
-		if err := handleConfigMapFromFileSources(configMap, s.FileSources); err != nil {
+		if err := HandleConfigMapFromFileSources(configMap, s.FileSources); err != nil {
 			return nil, err
 		}
 	}
 	if len(s.LiteralSources) > 0 {
-		if err := handleConfigMapFromLiteralSources(configMap, s.LiteralSources); err != nil {
+		if err := HandleConfigMapFromLiteralSources(configMap, s.LiteralSources); err != nil {
 			return nil, err
 		}
 	}
 	if len(s.EnvFileSource) > 0 {
-		if err := handleConfigMapFromEnvFileSource(configMap, s.EnvFileSource); err != nil {
+		if err := HandleConfigMapFromEnvFileSource(configMap, s.EnvFileSource); err != nil {
 			return nil, err
 		}
 	}
@@ -168,9 +168,9 @@ func (s ConfigMapGeneratorV1) validate() error {
 	return nil
 }
 
-// handleConfigMapFromLiteralSources adds the specified literal source
+// HandleConfigMapFromLiteralSources adds the specified literal source
 // information into the provided configMap.
-func handleConfigMapFromLiteralSources(configMap *v1.ConfigMap, literalSources []string) error {
+func HandleConfigMapFromLiteralSources(configMap *v1.ConfigMap, literalSources []string) error {
 	for _, literalSource := range literalSources {
 		keyName, value, err := util.ParseLiteralSource(literalSource)
 		if err != nil {
@@ -184,9 +184,9 @@ func handleConfigMapFromLiteralSources(configMap *v1.ConfigMap, literalSources [
 	return nil
 }
 
-// handleConfigMapFromFileSources adds the specified file source information
+// HandleConfigMapFromFileSources adds the specified file source information
 // into the provided configMap
-func handleConfigMapFromFileSources(configMap *v1.ConfigMap, fileSources []string) error {
+func HandleConfigMapFromFileSources(configMap *v1.ConfigMap, fileSources []string) error {
 	for _, fileSource := range fileSources {
 		keyName, filePath, err := util.ParseFileSource(fileSource)
 		if err != nil {
@@ -229,9 +229,9 @@ func handleConfigMapFromFileSources(configMap *v1.ConfigMap, fileSources []strin
 	return nil
 }
 
-// handleConfigMapFromEnvFileSource adds the specified env file source information
+// HandleConfigMapFromEnvFileSource adds the specified env file source information
 // into the provided configMap
-func handleConfigMapFromEnvFileSource(configMap *v1.ConfigMap, envFileSource string) error {
+func HandleConfigMapFromEnvFileSource(configMap *v1.ConfigMap, envFileSource string) error {
 	info, err := os.Stat(envFileSource)
 	if err != nil {
 		switch err := err.(type) {
@@ -245,7 +245,7 @@ func handleConfigMapFromEnvFileSource(configMap *v1.ConfigMap, envFileSource str
 		return fmt.Errorf("env config file cannot be a directory")
 	}
 
-	return addFromEnvFile(envFileSource, func(key, value string) error {
+	return AddFromEnvFile(envFileSource, func(key, value string) error {
 		return addKeyFromLiteralToConfigMap(configMap, key, value)
 	})
 }
