@@ -136,17 +136,17 @@ func (s SecretGeneratorV1) StructuredGenerate() (runtime.Object, error) {
 		secret.Type = v1.SecretType(s.Type)
 	}
 	if len(s.FileSources) > 0 {
-		if err := handleFromFileSources(secret, s.FileSources); err != nil {
+		if err := HandleFromFileSources(secret, s.FileSources); err != nil {
 			return nil, err
 		}
 	}
 	if len(s.LiteralSources) > 0 {
-		if err := handleFromLiteralSources(secret, s.LiteralSources); err != nil {
+		if err := HandleFromLiteralSources(secret, s.LiteralSources); err != nil {
 			return nil, err
 		}
 	}
 	if len(s.EnvFileSource) > 0 {
-		if err := handleFromEnvFileSource(secret, s.EnvFileSource); err != nil {
+		if err := HandleFromEnvFileSource(secret, s.EnvFileSource); err != nil {
 			return nil, err
 		}
 	}
@@ -171,8 +171,8 @@ func (s SecretGeneratorV1) validate() error {
 	return nil
 }
 
-// handleFromLiteralSources adds the specified literal source information into the provided secret
-func handleFromLiteralSources(secret *v1.Secret, literalSources []string) error {
+// HandleFromLiteralSources adds the specified literal source information into the provided secret
+func HandleFromLiteralSources(secret *v1.Secret, literalSources []string) error {
 	for _, literalSource := range literalSources {
 		keyName, value, err := util.ParseLiteralSource(literalSource)
 		if err != nil {
@@ -185,8 +185,8 @@ func handleFromLiteralSources(secret *v1.Secret, literalSources []string) error 
 	return nil
 }
 
-// handleFromFileSources adds the specified file source information into the provided secret
-func handleFromFileSources(secret *v1.Secret, fileSources []string) error {
+// HandleFromFileSources adds the specified file source information into the provided secret
+func HandleFromFileSources(secret *v1.Secret, fileSources []string) error {
 	for _, fileSource := range fileSources {
 		keyName, filePath, err := util.ParseFileSource(fileSource)
 		if err != nil {
@@ -228,9 +228,9 @@ func handleFromFileSources(secret *v1.Secret, fileSources []string) error {
 	return nil
 }
 
-// handleFromEnvFileSource adds the specified env file source information
+// HandleFromEnvFileSource adds the specified env file source information
 // into the provided secret
-func handleFromEnvFileSource(secret *v1.Secret, envFileSource string) error {
+func HandleFromEnvFileSource(secret *v1.Secret, envFileSource string) error {
 	info, err := os.Stat(envFileSource)
 	if err != nil {
 		switch err := err.(type) {
@@ -244,7 +244,7 @@ func handleFromEnvFileSource(secret *v1.Secret, envFileSource string) error {
 		return fmt.Errorf("env secret file cannot be a directory")
 	}
 
-	return addFromEnvFile(envFileSource, func(key, value string) error {
+	return AddFromEnvFile(envFileSource, func(key, value string) error {
 		return addKeyFromLiteralToSecret(secret, key, []byte(value))
 	})
 }
